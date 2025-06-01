@@ -1,0 +1,42 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
+import { EventActionsService } from './event-actions.service';
+import { CreateEventDto } from './dto/create-event.dto';
+import { UpdateEventDto } from './dto/update-event.dto';
+
+@Controller('event')
+export class EventActionsController {
+  constructor(private readonly eventService: EventActionsService) {}
+
+  @Post()
+  create(@Body() createEventDto: CreateEventDto) {
+    return this.eventService.create(createEventDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.eventService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.eventService.findOne(BigInt(id));
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
+    return this.eventService.update(BigInt(id), updateEventDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.eventService.remove(BigInt(id));
+  }
+}
