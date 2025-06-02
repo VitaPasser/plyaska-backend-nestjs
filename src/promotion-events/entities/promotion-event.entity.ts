@@ -1,6 +1,7 @@
 import { EventAction } from 'src/event-actions/entity/eventAction.entity';
 import { Promotion } from 'src/promotions/entities/promotion.entity';
 import {
+  Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
@@ -24,6 +25,9 @@ export class PromotionEvent {
   @ManyToOne(() => EventAction, (eventAction) => eventAction.PromotionEvents)
   @JoinColumn({ name: 'event_id' })
   eventAction: EventAction;
+
+  @Column({ name: 'end_at' })
+  endAt: Date;
 
   @CreateDateColumn({ name: 'start_at' })
   startAt: Date;

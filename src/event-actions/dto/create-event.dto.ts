@@ -5,6 +5,7 @@ import {
   IsPhoneNumber,
   ValidateNested,
 } from 'class-validator';
+import { Point } from 'typeorm';
 
 export class CoordinateDto {
   @IsNotEmpty()
@@ -30,7 +31,7 @@ export class CreateEventDto {
   description: string;
 
   @ValidateNested()
-  coord: CoordinateDto;
+  coords: Point;
 
   @IsNotEmpty()
   authorId: bigint;

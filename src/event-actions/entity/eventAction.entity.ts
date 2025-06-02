@@ -11,6 +11,7 @@ import {
   OneToMany,
   ManyToMany,
   Point,
+  JoinTable,
 } from 'typeorm';
 import { Image } from 'src/images/entities/image.entity';
 import { PromotionEvent } from 'src/promotion-events/entities/promotion-event.entity';
@@ -44,7 +45,8 @@ export class EventAction {
   @ManyToOne(() => User, (user) => user.eventActions)
   author: User;
 
-  @OneToMany(() => Image, (image) => image.eventActions)
+  @ManyToMany(() => Image)
+  @JoinTable()
   images: Image[];
 
   @ManyToMany(() => Tag, (tag) => tag.eventActions)

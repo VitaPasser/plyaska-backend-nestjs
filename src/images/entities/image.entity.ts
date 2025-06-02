@@ -1,5 +1,4 @@
-import { EventAction } from 'src/event-actions/entity/eventAction.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('images')
 export class Image {
@@ -8,7 +7,4 @@ export class Image {
 
   @Column()
   src: string;
-
-  @ManyToOne(() => EventAction, (eventAction) => eventAction.images)
-  eventActions: EventAction;
 }

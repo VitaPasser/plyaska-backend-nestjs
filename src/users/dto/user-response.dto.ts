@@ -1,8 +1,9 @@
 import { Exclude, Expose } from 'class-transformer';
+import { UserRole } from '../entity/user.entity';
 
 export class UserResponseDto {
   @Expose()
-  id: string;
+  id: bigint;
 
   @Expose()
   name: string;
@@ -12,6 +13,9 @@ export class UserResponseDto {
 
   @Expose()
   phoneNumber: string;
+
+  @Exclude()
+  role: UserRole;
 
   @Exclude()
   password: string;

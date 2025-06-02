@@ -4,34 +4,31 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import { Repository } from 'typeorm';
 import { EventAction } from './entity/eventAction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ImagesService } from 'src/images/images.service';
 
 @Injectable()
 export class EventActionsService {
   constructor(
     @InjectRepository(EventAction)
     protected eventActionsRepository: Repository<EventAction>,
-    protected imagesService: ImagesService,
   ) {}
 
   create(createEventDto: CreateEventDto) {
-    
-    return `This action returns all event`;
+    return this.eventActionsRepository.create(createEventDto);
   }
 
-  findAll() {
-    return `This action returns all event`;
+  async findAll() {
+    return await this.eventActionsRepository.find();
   }
 
-  findOne(id: bigint) {
-    return `This action returns a #${id} event`;
+  async findOne(id: bigint) {
+    return await this.eventActionsRepository.findOneBy({ id });
   }
 
-  update(id: bigint, updateEventDto: UpdateEventDto) {
-    return `This action updates a #${id} event`;
+  async update(id: bigint, updateEventDto: UpdateEventDto) {
+    return await this.eventActionsRepository.update({ id }, updateEventDto);
   }
 
-  remove(id: bigint) {
-    return `This action removes a #${id} event`;
+  async remove(id: bigint) {
+    return await this.eventActionsRepository.delete({ id });
   }
 }

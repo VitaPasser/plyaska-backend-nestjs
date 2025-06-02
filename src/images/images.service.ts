@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreateImageDto } from './dto/create-image.dto';
-import { UpdateImageDto } from './dto/update-image.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Image } from './entities/image.entity';
@@ -13,7 +12,7 @@ export class ImagesService {
   ) {}
 
   create(createImageDto: CreateImageDto) {
-    return 'This action adds a new image';
+    return this.imagesRepository.create(createImageDto);
   }
 
   async findAll() {
@@ -22,14 +21,6 @@ export class ImagesService {
 
   async findOne(id: bigint) {
     return await this.imagesRepository.findOneBy({ id });
-  }
-
-  async findAllByEventActionId(id: bigint) {
-    return await this.imagesRepository.findBy({ eventActions: { id } });
-  }
-
-  update(id: bigint, updateImageDto: UpdateImageDto) {
-    return `This action updates a #${id} image`;
   }
 
   async remove(id: bigint) {

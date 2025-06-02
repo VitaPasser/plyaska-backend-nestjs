@@ -20,10 +20,10 @@ export class Promotion {
   description: string;
 
   @Column('decimal')
-  power: string;
+  power: number;
 
   @Column('decimal')
-  price: string;
+  price: number;
 
   @ManyToOne(() => Currency, (currency) => currency.Promotion)
   currency: Currency;

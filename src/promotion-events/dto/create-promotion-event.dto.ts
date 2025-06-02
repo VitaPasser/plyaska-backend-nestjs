@@ -1,1 +1,5 @@
-export class CreatePromotionEventDto {}
+export class CreatePromotionEventDto {
+  promotionId: bigint;
+
+  eventActionId: bigint;
+}
