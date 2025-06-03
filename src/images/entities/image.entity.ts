@@ -2,8 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('images')
 export class Image {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint' })
-  id: bigint;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   src: string;

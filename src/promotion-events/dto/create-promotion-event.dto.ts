@@ -1,5 +1,5 @@
 export class CreatePromotionEventDto {
-  promotionId: bigint;
+  promotionId: string;
 
-  eventActionId: bigint;
+  eventActionId: string;
 }

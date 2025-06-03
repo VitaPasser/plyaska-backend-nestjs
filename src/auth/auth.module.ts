@@ -7,6 +7,8 @@ import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthGuard } from './auth.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/users/entity/user.entity';
 
 @Module({
   imports: [
@@ -22,6 +24,7 @@ import { APP_GUARD } from '@nestjs/core';
         },
       }),
     }),
+    TypeOrmModule.forFeature([User]),
   ],
   providers: [
     AuthService,

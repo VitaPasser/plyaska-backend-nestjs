@@ -3,7 +3,7 @@ import { UserRole } from '../entity/user.entity';
 
 export class UserResponseDto {
   @Expose()
-  id: bigint;
+  id: string;
 
   @Expose()
   name: string;

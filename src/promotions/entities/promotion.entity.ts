@@ -10,8 +10,8 @@ import {
 
 @Entity('promotions')
 export class Promotion {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint' })
-  id: bigint;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;

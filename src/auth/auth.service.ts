@@ -17,7 +17,10 @@ export class AuthService {
     const user = await this.userRepository.findOneBy({
       email: login.email,
     });
-    if (user && (await bcrypt.compare(user.password, login.password))) {
+    if (
+      user !== null &&
+      (await bcrypt.compare(login.password, user.password))
+    ) {
       return user;
     }
     return null;

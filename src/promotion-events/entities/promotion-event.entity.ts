@@ -12,11 +12,11 @@ import {
 
 @Entity('promotion_events')
 export class PromotionEvent {
-  @PrimaryColumn({ name: 'promotion_id', type: 'bigint' })
-  promotionId: bigint;
+  @PrimaryColumn({ name: 'promotion_id', type: 'uuid' })
+  promotionId: string;
 
-  @PrimaryColumn({ name: 'event_action_id', type: 'bigint' })
-  eventActionId: bigint;
+  @PrimaryColumn({ name: 'event_action_id', type: 'uuid' })
+  eventActionId: string;
 
   @ManyToOne(() => Promotion, (promotion) => promotion.promotionEvents)
   @JoinColumn({ name: 'promotion_id' })

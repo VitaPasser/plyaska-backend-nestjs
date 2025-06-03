@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -17,16 +17,13 @@ export class UsersService {
   SALT_ROUNDS: number = 10;
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    return plainToInstance(
-      UserResponseDto,
-      this.usersRepository.create({
-        ...createUserDto,
-        password: await bcrypt.hash(createUserDto.password, this.SALT_ROUNDS),
-      }),
-      {
-        excludeExtraneousValues: true,
-      },
-    );
+    const user = await this.usersRepository.save({
+      ...createUserDto,
+      password: await bcrypt.hash(createUserDto.password, this.SALT_ROUNDS),
+    });
+    return plainToInstance(UserResponseDto, user, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async findAll(): Promise<UserResponseDto[]> {
@@ -35,30 +32,26 @@ export class UsersService {
     });
   }
 
-  async findOne(id: bigint): Promise<UserResponseDto | null> {
-    return plainToInstance(
-      UserResponseDto,
-      await this.usersRepository.findOneBy({ id }),
-      {
-        excludeExtraneousValues: true,
-      },
-    );
+  async findOne(id: string): Promise<UserResponseDto> {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) throw new NotFoundException();
+    return plainToInstance(UserResponseDto, user, {
+      excludeExtraneousValues: true,
+    });
   }
 
-  async findByEmail(email: string): Promise<UserResponseDto | null> {
-    return plainToInstance(
-      UserResponseDto,
-      await this.usersRepository.findOneBy({ email }),
-      {
-        excludeExtraneousValues: true,
-      },
-    );
+  async findByEmail(email: string): Promise<UserResponseDto> {
+    const user = await this.usersRepository.findOneBy({ email });
+    if (!user) throw new NotFoundException();
+    return plainToInstance(UserResponseDto, user, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async update(
-    id: bigint,
+    id: string,
     updateUserDto: UpdateUserDto,
-  ): Promise<UserResponseDto | null> {
+  ): Promise<UserResponseDto> {
     const data = {
       ...updateUserDto,
     };
@@ -68,22 +61,16 @@ export class UsersService {
         this.SALT_ROUNDS,
       );
     }
-    return plainToInstance(
-      UserResponseDto,
-      await this.usersRepository.update({ id }, data),
-      {
-        excludeExtraneousValues: true,
-      },
-    );
+    await this.usersRepository.update({ id }, data);
+    return this.findOne(id);
   }
 
-  async remove(id: bigint): Promise<UserResponseDto | null> {
-    return plainToInstance(
-      UserResponseDto,
-      await this.usersRepository.delete({ id }),
-      {
-        excludeExtraneousValues: true,
-      },
-    );
+  async remove(id: string) {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) throw new NotFoundException();
+    const removed = await this.usersRepository.remove(user);
+    return plainToInstance(UserResponseDto, removed, {
+      excludeExtraneousValues: true,
+    });
   }
 }

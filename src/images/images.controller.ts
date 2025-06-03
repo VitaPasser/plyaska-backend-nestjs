@@ -44,11 +44,11 @@ export class ImagesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.imagesService.findOne(BigInt(id));
+    return this.imagesService.findOne(id);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.imagesService.remove(BigInt(id));
+    return this.imagesService.remove(id);
   }
 }

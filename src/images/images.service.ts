@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateImageDto } from './dto/create-image.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -19,11 +19,14 @@ export class ImagesService {
     return await this.imagesRepository.find();
   }
 
-  async findOne(id: bigint) {
-    return await this.imagesRepository.findOneBy({ id });
+  async findOne(id: string) {
+    const image = await this.imagesRepository.findOneBy({ id });
+    if (!image) throw new NotFoundException();
+    return image;
   }
 
-  async remove(id: bigint) {
-    return await this.imagesRepository.delete({ id });
+  async remove(id: string) {
+    const image = await this.findOne(id);
+    return await this.imagesRepository.remove(image);
   }
 }

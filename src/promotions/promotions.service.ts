@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { UpdatePromotionDto } from './dto/update-promotion.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,22 +13,28 @@ export class PromotionsService {
   ) {}
 
   create(createPromotionDto: CreatePromotionDto) {
-    return this.promotionsRepository.create(createPromotionDto);
+    return this.promotionsRepository.save(createPromotionDto);
   }
 
   findAll() {
     return this.promotionsRepository.find();
   }
 
-  findOne(id: bigint) {
-    return this.promotionsRepository.findOneBy({ id });
+  async findOne(id: string) {
+    const promotion = await this.promotionsRepository.findOneBy({
+      id,
+    });
+    if (!promotion) throw new NotFoundException();
+    return promotion;
   }
 
-  update(id: bigint, updatePromotionDto: UpdatePromotionDto) {
-    return this.promotionsRepository.update({ id }, updatePromotionDto);
+  async update(id: string, updatePromotionDto: UpdatePromotionDto) {
+    await this.promotionsRepository.update({ id }, updatePromotionDto);
+    return this.findOne(id);
   }
 
-  remove(id: bigint) {
-    return this.promotionsRepository.delete({ id });
+  async remove(id: string) {
+    const promotion = await this.findOne(id);
+    return this.promotionsRepository.remove(promotion);
   }
 }

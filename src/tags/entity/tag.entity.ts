@@ -3,8 +3,8 @@ import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('tags')
 export class Tag {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint' })
-  id: bigint;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;

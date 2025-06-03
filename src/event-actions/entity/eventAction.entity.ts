@@ -18,8 +18,8 @@ import { PromotionEvent } from 'src/promotion-events/entities/promotion-event.en
 
 @Entity('event_actions')
 export class EventAction {
-  @PrimaryGeneratedColumn('increment', { type: 'bigint' })
-  id: bigint;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;

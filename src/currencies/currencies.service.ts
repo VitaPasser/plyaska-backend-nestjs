@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCurrencyDto } from './dto/create-currency.dto';
 import { UpdateCurrencyDto } from './dto/update-currency.dto';
 import { Currency } from './entities/currency.entity';
@@ -20,15 +20,20 @@ export class CurrenciesService {
     return this.currenciesRepository.find();
   }
 
-  findOne(id: number) {
-    return this.currenciesRepository.findOneBy({ id });
+  async findOne(id: number) {
+    const currencies = await this.currenciesRepository.findOneBy({ id });
+    if (!currencies) throw new NotFoundException();
+    return currencies;
   }
 
-  update(id: number, updateCurrencyDto: UpdateCurrencyDto) {
-    return this.currenciesRepository.update({ id }, updateCurrencyDto);
+  async update(id: number, updateCurrencyDto: UpdateCurrencyDto) {
+    await this.currenciesRepository.update({ id }, updateCurrencyDto);
+    return this.findOne(id);
   }
 
-  remove(id: number) {
-    return this.currenciesRepository.delete({ id });
+  async remove(id: number) {
+    const currencies = await this.findOne(id);
+    await this.currenciesRepository.remove(currencies);
+    return currencies;
   }
 }

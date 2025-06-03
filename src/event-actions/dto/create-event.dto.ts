@@ -34,13 +34,13 @@ export class CreateEventDto {
   coords: Point;
 
   @IsNotEmpty()
-  authorId: bigint;
+  authorid: string;
 
   @IsNotEmpty({ each: true })
-  imagesIds: bigint[];
+  imagesIds: string[];
 
   @IsNotEmpty({ each: true })
-  tagIds: bigint[];
+  tagIds: string[];
 
   @IsNotEmpty()
   categoryId: number;

@@ -32,10 +32,7 @@ export class PromotionEventsController {
     @Param('eventActionId') eventActionId: string,
     @Param('promotionId') promotionId: string,
   ) {
-    return this.promotionEventsService.findOne(
-      BigInt(eventActionId),
-      BigInt(promotionId),
-    );
+    return this.promotionEventsService.findOne(eventActionId, promotionId);
   }
 
   @Patch([':eventActionId', ':promotionId'])
@@ -45,8 +42,8 @@ export class PromotionEventsController {
     @Body() updatePromotionEventDto: UpdatePromotionEventDto,
   ) {
     return this.promotionEventsService.update(
-      BigInt(eventActionId),
-      BigInt(promotionId),
+      eventActionId,
+      promotionId,
       updatePromotionEventDto,
     );
   }
@@ -58,8 +55,8 @@ export class PromotionEventsController {
     @Body() updatePromotionEventDto: UpdatePromotionEventDto,
   ) {
     return this.promotionEventsService.updateAndUpdateTime(
-      BigInt(eventActionId),
-      BigInt(promotionId),
+      eventActionId,
+      promotionId,
       updatePromotionEventDto,
     );
   }
@@ -69,9 +66,6 @@ export class PromotionEventsController {
     @Param('eventActionId') eventActionId: string,
     @Param('promotionId') promotionId: string,
   ) {
-    return this.promotionEventsService.remove(
-      BigInt(eventActionId),
-      BigInt(promotionId),
-    );
+    return this.promotionEventsService.remove(eventActionId, promotionId);
   }
 }

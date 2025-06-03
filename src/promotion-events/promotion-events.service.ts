@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePromotionEventDto } from './dto/create-promotion-event.dto';
 import { UpdatePromotionEventDto } from './dto/update-promotion-event.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,7 +13,7 @@ export class PromotionEventsService {
   ) {}
   create(createPromotionEventDto: CreatePromotionEventDto) {
     const endAt = new Date(new Date().getDate() + 31);
-    return this.promotionEventsRepository.create({
+    return this.promotionEventsRepository.save({
       ...createPromotionEventDto,
       endAt,
     });
@@ -23,46 +23,48 @@ export class PromotionEventsService {
     return this.promotionEventsRepository.find();
   }
 
-  findOne(eventActionId: bigint, promotionId: bigint) {
-    return this.promotionEventsRepository.findOneBy({
+  async findOne(eventActionId: string, promotionId: string) {
+    const promotionEvent = await this.promotionEventsRepository.findOneBy({
       eventActionId,
       promotionId,
     });
+    if (!promotionEvent) throw new NotFoundException();
+    return promotionEvent;
   }
 
-  update(
-    eventActionId: bigint,
-    promotionId: bigint,
+  async update(
+    eventActionId: string,
+    promotionId: string,
     updatePromotionEventDto: UpdatePromotionEventDto,
   ) {
-    return this.promotionEventsRepository.update(
+    await this.promotionEventsRepository.update(
       {
         eventActionId,
         promotionId,
       },
       updatePromotionEventDto,
     );
+    return this.findOne(eventActionId, promotionId);
   }
 
-  updateAndUpdateTime(
-    eventActionId: bigint,
-    promotionId: bigint,
+  async updateAndUpdateTime(
+    eventActionId: string,
+    promotionId: string,
     updatePromotionEventDto: UpdatePromotionEventDto,
   ) {
     const endAt = new Date(new Date().getDate() + 31);
-    return this.promotionEventsRepository.update(
+    await this.promotionEventsRepository.update(
       {
         eventActionId,
         promotionId,
       },
       { ...updatePromotionEventDto, endAt },
     );
+    return this.findOne(eventActionId, promotionId);
   }
 
-  remove(eventActionId: bigint, promotionId: bigint) {
-    return this.promotionEventsRepository.delete({
-      eventActionId,
-      promotionId,
-    });
+  async remove(eventActionId: string, promotionId: string) {
+    const promotionEvent = await this.findOne(eventActionId, promotionId);
+    return this.promotionEventsRepository.remove(promotionEvent);
   }
 }
