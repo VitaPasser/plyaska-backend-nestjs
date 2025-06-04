@@ -14,13 +14,13 @@ export class PromotionEventsService {
   create(createPromotionEventDto: CreatePromotionEventDto) {
     const endAt = new Date();
     endAt.setDate(new Date().getDay() + 31);
-    const eventActionId = createPromotionEventDto.eventActionId;
-    const promotionId = createPromotionEventDto.promotionId;
-    return this.promotionEventsRepository.save({
-      eventActionId,
-      promotionId,
+    const promotionService = this.promotionEventsRepository.create({
+      ...createPromotionEventDto,
       endAt,
+      eventAction: { id: createPromotionEventDto.eventActionId },
+      promotion: { id: createPromotionEventDto.promotionId },
     });
+    return this.promotionEventsRepository.save(promotionService);
   }
 
   findAll() {

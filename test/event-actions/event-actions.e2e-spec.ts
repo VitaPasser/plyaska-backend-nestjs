@@ -75,7 +75,7 @@ describe('EventActionsController (e2e)', () => {
 
   it('GET /events/near?...query - should return array of near events', async () => {
     const dto = await newEventActionData(app, access_token);
-    const resCreate = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/events')
       .send(dto)
       .auth(access_token, TYPE_BEARER)

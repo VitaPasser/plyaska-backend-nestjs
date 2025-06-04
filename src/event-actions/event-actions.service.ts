@@ -19,7 +19,7 @@ export class EventActionsService {
     private readonly eventActionRepositoryService: EventActionRepository,
   ) {}
 
-  create(createEventDto: CreateEventActionDto) {
+  async create(createEventDto: CreateEventActionDto) {
     const coords: Point = {
       type: 'Point',
       coordinates: [
@@ -27,19 +27,33 @@ export class EventActionsService {
         createEventDto.coords.longitude,
       ],
     };
-    const eventAction = { ...createEventDto, coords };
+    const eventAction = this.eventActionsRepository.create({
+      ...createEventDto,
+      coords,
+      author: { id: createEventDto.authorId },
+      category: { id: createEventDto.categoryId },
+      images: createEventDto.imagesIds.map((id) => ({ id })),
+      tags: createEventDto.tagIds.map((id) => ({ id })),
+    });
     return this.eventActionsRepository.save(eventAction);
   }
 
   async findAll() {
-    return await this.eventActionsRepository.find();
+    return await this.eventActionsRepository.find({
+      relations: {
+        category: true,
+        author: true,
+        images: true,
+        promotionEvents: true,
+      },
+    });
   }
 
   async findNearestWithPromotionAndPagination(
     dto: FindNearestWithPromotionAndPaginationPageEventActionDto,
   ) {
     const { page, pageSize, limit, ...coords } = dto;
-    const pageNumber = page - 1 > 0 ? page - 1 : 1;
+    const pageNumber = page - 1 <= 0 ? 0 : page - 1;
     const offset = pageNumber * pageSize;
     const dtoWithOffset: FindNearestWithPromotionAndPaginationOffsetEventActionDto =
       { limit, offset, ...coords };
@@ -53,27 +67,43 @@ export class EventActionsService {
       where: {
         id,
       },
-      relations: ['category', 'author', 'images', 'promotionEvents'],
+      relations: {
+        category: true,
+        author: true,
+        images: true,
+        promotionEvents: true,
+      },
     });
     if (!event) throw new NotFoundException();
     return event;
   }
 
   async update(id: string, updateEventDto: UpdateEventActionDto) {
-    let eventAction;
+    const eventAction: any = { ...updateEventDto };
+
     if (updateEventDto.coords) {
-      const coords: Point = {
+      eventAction.coords = {
         type: 'Point',
         coordinates: [
           updateEventDto.coords.latitude,
           updateEventDto.coords.longitude,
         ],
       };
-      eventAction = { ...updateEventDto, coords };
-    } else {
-      eventAction = { ...updateEventDto };
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
+    if (updateEventDto.authorId) {
+      eventAction.author = { id: updateEventDto.authorId };
+    }
+    if (updateEventDto.categoryId) {
+      eventAction.category = { id: updateEventDto.categoryId };
+    }
+    if (updateEventDto.imagesIds) {
+      eventAction.images = updateEventDto.imagesIds.map((id) => ({ id }));
+    }
+    if (updateEventDto.tagIds) {
+      eventAction.tags = updateEventDto.tagIds.map((id) => ({ id }));
+    }
+
     await this.eventActionsRepository.update({ id }, eventAction);
     return this.findOne(id);
   }

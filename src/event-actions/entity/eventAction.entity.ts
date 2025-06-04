@@ -63,5 +63,5 @@ export class EventAction {
     onUpdate: 'CASCADE',
     cascade: true,
   })
-  promotionEvents!: PromotionEvent[];
+  promotionEvents: PromotionEvent[];
 }

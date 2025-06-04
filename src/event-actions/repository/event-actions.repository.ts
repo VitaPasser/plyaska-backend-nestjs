@@ -17,29 +17,64 @@ export class EventActionRepository {
     const pointWKT = `SRID=4326;POINT(${dto.longitude} ${dto.latitude})`;
     return this.eventActionRepo
       .createQueryBuilder('ea')
-      .leftJoin(
+      .leftJoinAndSelect('ea.author', 'author')
+      .leftJoinAndSelect('ea.category', 'category')
+      .leftJoinAndSelect('ea.images', 'images')
+      .leftJoinAndSelect('ea.tags', 'tags')
+      .leftJoinAndSelect(
         'ea.promotionEvents',
         'pe',
         'NOW() BETWEEN pe.startAt AND pe.endAt',
       )
-      .leftJoin('pe.promotion', 'p')
+      .leftJoinAndSelect('pe.promotion', 'promotion')
       .addSelect(
         `
-    ST_DistanceSphere(ea.coords, ST_GeomFromText(:point, 4326))
-  `,
+        ST_DistanceSphere(ea.coords, ST_GeomFromText(:point, 4326))
+      `,
         'raw_distance',
       )
       .addSelect(
         `
-    ST_DistanceSphere(ea.coords, ST_GeomFromText(:point, 4326)) /
-    (1 + LOG(1 + COALESCE(MAX(p.power), 0)))
-  `,
+        ST_DistanceSphere(ea.coords, ST_GeomFromText(:point, 4326)) /
+        (1 + LOG(1 + COALESCE(MAX(promotion.power), 0)))
+      `,
         'effective_distance',
       )
-      .groupBy('ea.id')
+      .where((qb) => {
+        const subQuery = qb
+          .subQuery()
+          .select('ea_sub.id')
+          .from(EventAction, 'ea_sub')
+          .leftJoin(
+            'ea_sub.promotionEvents',
+            'pe_sub',
+            'NOW() BETWEEN pe_sub.startAt AND pe_sub.endAt',
+          )
+          .leftJoin('pe_sub.promotion', 'promotion_sub')
+          // .addSelect(
+          // `
+          // ST_DistanceSphere(ea_sub.coords, ST_GeomFromText(:point, 4326)) /
+          // (1 + LOG(1 + COALESCE(MAX(promotion_sub.power), 0)))
+          // `,
+          //   'effective_distance_sub',
+          // )
+          .groupBy('ea_sub.id')
+          .orderBy(
+            `
+            ST_DistanceSphere(ea_sub.coords, ST_GeomFromText(:point, 4326)) /
+            (1 + LOG(1 + COALESCE(MAX(promotion_sub.power), 0)))
+            `,
+            'ASC',
+          )
+          .limit(dto.limit)
+          .offset(dto.offset)
+          .getQuery();
+        return 'ea.id IN ' + subQuery;
+      })
+      .groupBy(
+        'ea.id, pe.promotion_id, pe.event_action_id, promotion.id, images.id, tags.id, author.id, category.id',
+      )
       .orderBy('effective_distance', 'ASC')
-      .limit(dto.limit)
-      .offset(dto.offset)
       .setParameter('point', pointWKT)
       .getMany();
   }
