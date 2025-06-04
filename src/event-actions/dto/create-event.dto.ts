@@ -1,11 +1,12 @@
+import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsLatitude,
   IsLongitude,
   IsNotEmpty,
   IsPhoneNumber,
   ValidateNested,
 } from 'class-validator';
-import { Point } from 'typeorm';
 
 export class CoordinateDto {
   @IsNotEmpty()
@@ -31,14 +32,17 @@ export class CreateEventDto {
   description: string;
 
   @ValidateNested()
-  coords: Point;
+  @Type(() => CoordinateDto)
+  coords: CoordinateDto;
 
   @IsNotEmpty()
-  authorid: string;
+  authorId: string;
 
+  @IsArray()
   @IsNotEmpty({ each: true })
   imagesIds: string[];
 
+  @IsArray()
   @IsNotEmpty({ each: true })
   tagIds: string[];
 

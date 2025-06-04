@@ -9,6 +9,9 @@ export class Currency {
   @Column()
   quotation: string;
 
-  @OneToMany(() => Promotion, (promotion) => promotion.currency)
+  @OneToMany(() => Promotion, (promotion) => promotion.currency, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   Promotion: Promotion[];
 }

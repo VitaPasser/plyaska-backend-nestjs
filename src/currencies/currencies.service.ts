@@ -13,7 +13,7 @@ export class CurrenciesService {
   ) {}
 
   create(createCurrencyDto: CreateCurrencyDto) {
-    return this.currenciesRepository.create(createCurrencyDto);
+    return this.currenciesRepository.save(createCurrencyDto);
   }
 
   findAll() {

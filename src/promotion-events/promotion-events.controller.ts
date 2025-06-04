@@ -10,6 +10,7 @@ import {
 import { PromotionEventsService } from './promotion-events.service';
 import { CreatePromotionEventDto } from './dto/create-promotion-event.dto';
 import { UpdatePromotionEventDto } from './dto/update-promotion-event.dto';
+import { Public } from 'src/auth/public.const';
 
 @Controller('promotion-events')
 export class PromotionEventsController {
@@ -22,12 +23,14 @@ export class PromotionEventsController {
     return this.promotionEventsService.create(createPromotionEventDto);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.promotionEventsService.findAll();
   }
 
-  @Get([':eventActionId', ':promotionId'])
+  @Public()
+  @Get(':eventActionId/:promotionId')
   findOne(
     @Param('eventActionId') eventActionId: string,
     @Param('promotionId') promotionId: string,
@@ -35,7 +38,7 @@ export class PromotionEventsController {
     return this.promotionEventsService.findOne(eventActionId, promotionId);
   }
 
-  @Patch([':eventActionId', ':promotionId'])
+  @Patch(':eventActionId/:promotionId')
   update(
     @Param('eventActionId') eventActionId: string,
     @Param('promotionId') promotionId: string,
@@ -48,20 +51,7 @@ export class PromotionEventsController {
     );
   }
 
-  @Patch([':eventActionId', ':promotionId'])
-  updateAndUpdateTime(
-    @Param('eventActionId') eventActionId: string,
-    @Param('promotionId') promotionId: string,
-    @Body() updatePromotionEventDto: UpdatePromotionEventDto,
-  ) {
-    return this.promotionEventsService.updateAndUpdateTime(
-      eventActionId,
-      promotionId,
-      updatePromotionEventDto,
-    );
-  }
-
-  @Delete([':eventActionId', ':promotionId'])
+  @Delete(':eventActionId/:promotionId')
   remove(
     @Param('eventActionId') eventActionId: string,
     @Param('promotionId') promotionId: string,

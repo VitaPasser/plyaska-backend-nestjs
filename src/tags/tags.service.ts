@@ -9,19 +9,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class TagsService {
   constructor(
     @InjectRepository(Tag)
-    protected tagRepository: Repository<Tag>,
+    protected tagsRepository: Repository<Tag>,
   ) {}
 
   create(createTagDto: CreateTagDto) {
-    return this.tagRepository.save(createTagDto);
+    return this.tagsRepository.save(createTagDto);
   }
 
   async findAll() {
-    return await this.tagRepository.find();
+    return await this.tagsRepository.find();
   }
 
   async findOne(id: string) {
-    const tag = await this.tagRepository.findOneBy({
+    const tag = await this.tagsRepository.findOneBy({
       id,
     });
     if (!tag) throw new NotFoundException();
@@ -29,12 +29,14 @@ export class TagsService {
   }
 
   async update(id: string, updateTagDto: UpdateTagDto) {
-    await this.tagRepository.update({ id }, updateTagDto);
+    await this.tagsRepository.update({ id }, updateTagDto);
     return this.findOne(id);
   }
 
   async remove(id: string) {
-    const tag = await this.findOne(id);
-    return await this.tagRepository.remove(tag);
+    const tag = await this.tagsRepository.findOneBy({ id });
+    if (!tag) throw new NotFoundException();
+    await this.tagsRepository.delete({ id });
+    return tag;
   }
 }

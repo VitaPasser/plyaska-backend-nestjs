@@ -12,7 +12,7 @@ export class ImagesService {
   ) {}
 
   create(createImageDto: CreateImageDto) {
-    return this.imagesRepository.create(createImageDto);
+    return this.imagesRepository.save(createImageDto);
   }
 
   async findAll() {
@@ -27,6 +27,7 @@ export class ImagesService {
 
   async remove(id: string) {
     const image = await this.findOne(id);
-    return await this.imagesRepository.remove(image);
+    await this.imagesRepository.remove(image);
+    return image;
   }
 }

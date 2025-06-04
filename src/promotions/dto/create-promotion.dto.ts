@@ -1,5 +1,4 @@
-import { IsNotEmpty, ValidateNested } from 'class-validator';
-import { Currency } from 'src/currencies/entities/currency.entity';
+import { IsNotEmpty } from 'class-validator';
 
 export class CreatePromotionDto {
   @IsNotEmpty()
@@ -14,6 +13,6 @@ export class CreatePromotionDto {
   @IsNotEmpty()
   price: number;
 
-  @ValidateNested()
-  currency: Currency;
+  @IsNotEmpty()
+  currencyId: number;
 }

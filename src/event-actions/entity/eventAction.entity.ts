@@ -56,6 +56,9 @@ export class EventAction {
   @JoinColumn({ name: 'category_id' })
   category: Category;
 
-  @OneToMany(() => PromotionEvent, (pe) => pe.eventAction)
-  PromotionEvents: PromotionEvent[];
+  @OneToMany(() => PromotionEvent, (pe) => pe.eventAction, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  PromotionEvents!: PromotionEvent[];
 }

@@ -12,9 +12,13 @@ export class PromotionEventsService {
     protected promotionEventsRepository: Repository<PromotionEvent>,
   ) {}
   create(createPromotionEventDto: CreatePromotionEventDto) {
-    const endAt = new Date(new Date().getDate() + 31);
+    const endAt = new Date();
+    endAt.setDate(new Date().getDay() + 31);
+    const eventActionId = createPromotionEventDto.eventActionId;
+    const promotionId = createPromotionEventDto.promotionId;
     return this.promotionEventsRepository.save({
-      ...createPromotionEventDto,
+      eventActionId,
+      promotionId,
       endAt,
     });
   }
@@ -37,22 +41,8 @@ export class PromotionEventsService {
     promotionId: string,
     updatePromotionEventDto: UpdatePromotionEventDto,
   ) {
-    await this.promotionEventsRepository.update(
-      {
-        eventActionId,
-        promotionId,
-      },
-      updatePromotionEventDto,
-    );
-    return this.findOne(eventActionId, promotionId);
-  }
-
-  async updateAndUpdateTime(
-    eventActionId: string,
-    promotionId: string,
-    updatePromotionEventDto: UpdatePromotionEventDto,
-  ) {
-    const endAt = new Date(new Date().getDate() + 31);
+    const endAt = new Date();
+    endAt.setDate(new Date().getDay() + 31);
     await this.promotionEventsRepository.update(
       {
         eventActionId,
@@ -65,6 +55,7 @@ export class PromotionEventsService {
 
   async remove(eventActionId: string, promotionId: string) {
     const promotionEvent = await this.findOne(eventActionId, promotionId);
-    return this.promotionEventsRepository.remove(promotionEvent);
+    await this.promotionEventsRepository.remove(promotionEvent);
+    return promotionEvent;
   }
 }

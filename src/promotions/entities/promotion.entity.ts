@@ -28,6 +28,9 @@ export class Promotion {
   @ManyToOne(() => Currency, (currency) => currency.Promotion)
   currency: Currency;
 
-  @OneToMany(() => PromotionEvent, (pe) => pe.promotion)
-  promotionEvents: PromotionEvent[];
+  @OneToMany(() => PromotionEvent, (pe) => pe.promotion, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  promotionEvents!: PromotionEvent[];
 }

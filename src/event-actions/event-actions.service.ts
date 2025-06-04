@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
-import { Repository } from 'typeorm';
+import { Point, Repository } from 'typeorm';
 import { EventAction } from './entity/eventAction.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -13,7 +13,15 @@ export class EventActionsService {
   ) {}
 
   create(createEventDto: CreateEventDto) {
-    return this.eventActionsRepository.save(createEventDto);
+    const coords: Point = {
+      type: 'Point',
+      coordinates: [
+        createEventDto.coords.latitude,
+        createEventDto.coords.longitude,
+      ],
+    };
+    const eventAction = { ...createEventDto, coords };
+    return this.eventActionsRepository.save(eventAction);
   }
 
   async findAll() {
@@ -27,12 +35,27 @@ export class EventActionsService {
   }
 
   async update(id: string, updateEventDto: UpdateEventDto) {
-    await this.eventActionsRepository.update({ id }, updateEventDto);
+    let eventAction;
+    if (updateEventDto.coords) {
+      const coords: Point = {
+        type: 'Point',
+        coordinates: [
+          updateEventDto.coords.latitude,
+          updateEventDto.coords.longitude,
+        ],
+      };
+      eventAction = { ...updateEventDto, coords };
+    } else {
+      eventAction = { ...updateEventDto };
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    await this.eventActionsRepository.update({ id }, eventAction);
     return this.findOne(id);
   }
 
   async remove(id: string) {
     const event = await this.findOne(id);
-    return await this.eventActionsRepository.remove(event);
+    await this.eventActionsRepository.delete({ id });
+    return event;
   }
 }

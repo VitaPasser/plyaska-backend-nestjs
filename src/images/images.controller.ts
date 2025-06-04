@@ -12,6 +12,9 @@ import { CreateImageDto } from './dto/create-image.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { Public } from 'src/auth/public.const';
+import { Roles } from 'src/users/roles/roles.decorator';
+import { Role } from 'src/users/roles/enums/role.enum';
 
 @Controller('images')
 export class ImagesController {
@@ -37,17 +40,20 @@ export class ImagesController {
     return this.imagesService.create(createImageDto);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.imagesService.findAll();
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.imagesService.findOne(id);
   }
 
   @Delete(':id')
+  @Roles(Role.ADMIN)
   remove(@Param('id') id: string) {
     return this.imagesService.remove(id);
   }

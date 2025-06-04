@@ -11,6 +11,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Public } from 'src/auth/public.const';
+import { CurrentUser } from './current-user.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -35,11 +36,13 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @CurrentUser()
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
+  @CurrentUser()
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }

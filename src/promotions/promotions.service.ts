@@ -35,6 +35,7 @@ export class PromotionsService {
 
   async remove(id: string) {
     const promotion = await this.findOne(id);
-    return this.promotionsRepository.remove(promotion);
+    await this.promotionsRepository.remove(promotion);
+    return promotion;
   }
 }

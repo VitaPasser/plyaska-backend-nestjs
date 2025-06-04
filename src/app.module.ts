@@ -1,4 +1,6 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import * as express from 'express';
+import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -8,7 +10,6 @@ import { CategoriesModule } from './categories/categories.module';
 import { TagsModule } from './tags/tags.module';
 import { EventActionsModule } from './event-actions/event-actions.module';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
 import { ImagesModule } from './images/images.module';
 import { PromotionEventsModule } from './promotion-events/promotion-events.module';
 import { PromotionsModule } from './promotions/promotions.module';
@@ -38,6 +39,9 @@ import { CurrenciesModule } from './currencies/currencies.module';
           // entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: configService.get<boolean>('DB_SYNCHRONIZE')!,
           autoLoadEntities: true,
+          extra: {
+            max: 2000000,
+          },
         };
       },
     }),
@@ -49,6 +53,10 @@ import { CurrenciesModule } from './currencies/currencies.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-  constructor(private dataSource: DataSource) {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(express.static(join(process.cwd(), 'uploads')))
+      .forRoutes('/uploads');
+  }
 }

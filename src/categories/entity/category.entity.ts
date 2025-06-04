@@ -9,6 +9,9 @@ export class Category {
   @Column()
   name: string;
 
-  @OneToMany(() => EventAction, (eventAction) => eventAction.category)
-  eventActions: EventAction[];
+  @OneToMany(() => EventAction, (eventAction) => eventAction.category, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  eventActions!: EventAction[];
 }

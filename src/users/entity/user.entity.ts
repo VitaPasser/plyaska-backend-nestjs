@@ -6,12 +6,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
-export enum UserRole {
-  ADMIN = 'admin',
-  EDITOR = 'editor',
-  GHOST = 'ghost',
-}
+import { Role } from '../roles/enums/role.enum';
 
 @Entity('users')
 export class User {
@@ -32,14 +27,17 @@ export class User {
 
   @Column({
     type: 'enum',
-    enum: UserRole,
-    default: UserRole.EDITOR,
+    enum: Role,
+    default: Role.USER,
   })
-  role: UserRole;
+  role: Role;
 
   @CreateDateColumn({ name: 'create_at' })
   createAt: Date;
 
-  @OneToMany(() => EventAction, (eventAction) => eventAction.author)
-  eventActions: EventAction[];
+  @OneToMany(() => EventAction, (eventAction) => eventAction.author, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  eventActions!: EventAction[];
 }
