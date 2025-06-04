@@ -42,21 +42,15 @@ export class EventAction {
   @CreateDateColumn({ name: 'create_at' })
   createAt: Date;
 
-  @ManyToOne(() => User, (user) => user.eventActions, {
-    cascade: true,
-  })
+  @ManyToOne(() => User, (user) => user.eventActions)
   @JoinColumn()
   author: User;
 
-  @ManyToMany(() => Image, {
-    cascade: true,
-  })
+  @ManyToMany(() => Image)
   @JoinTable()
   images: Image[];
 
-  @ManyToMany(() => Tag, (tag) => tag.eventActions, {
-    cascade: true,
-  })
+  @ManyToMany(() => Tag, (tag) => tag.eventActions)
   @JoinTable()
   tags: Tag[];
 

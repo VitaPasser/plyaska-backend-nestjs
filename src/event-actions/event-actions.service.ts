@@ -53,12 +53,7 @@ export class EventActionsService {
       where: {
         id,
       },
-      relations: {
-        category: true,
-        author: true,
-        images: true,
-        promotionEvents: true,
-      },
+      relations: ['category', 'author', 'images', 'promotionEvents'],
     });
     if (!event) throw new NotFoundException();
     return event;

@@ -37,7 +37,6 @@ import { queryParser } from 'express-query-parser';
           username: configService.get<string>('DB_USERNAME')!,
           password: configService.get<string>('DB_PASSWORD')!,
           database: configService.get<string>('DB_DATABASE')!,
-          // entities: [__dirname + '/**/*.entity{.ts,.js}'],
           synchronize: configService.get<boolean>('DB_SYNCHRONIZE')!,
           autoLoadEntities: true,
           extra: {

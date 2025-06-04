@@ -114,7 +114,7 @@ export const newEventActionData = async (
     );
   }
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  const tagsIds: string[] = resImages.map((res) => res.body.id);
+  const tagsIds: string[] = resTags.map((res) => res.body.id);
 
   const categoryDto = newCategoryData();
   const categoryId = (
@@ -124,7 +124,7 @@ export const newEventActionData = async (
       .auth(access_token, TYPE_BEARER)
   ).body.id;
 
-  return {
+  const result = {
     name: faker.lorem.words(2),
     address: faker.location.streetAddress(),
     phoneNumber: faker.phone.number(),
@@ -138,6 +138,7 @@ export const newEventActionData = async (
     tagIds: tagsIds,
     categoryId: categoryId,
   };
+  return result;
 };
 
 export type PromotionEventActionId = {
@@ -157,7 +158,7 @@ export const newPromotionEventData = async (
   ).body.id;
   const eventActionId = (
     await request(app.getHttpServer())
-      .post('/event')
+      .post('/events')
       .send(await newEventActionData(app, access_token))
       .auth(access_token, TYPE_BEARER)
   ).body.id;

@@ -32,5 +32,5 @@ export class Promotion {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  promotionEvents!: PromotionEvent[];
+  promotionEvents: PromotionEvent[];
 }

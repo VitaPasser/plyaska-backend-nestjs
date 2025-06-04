@@ -23,8 +23,6 @@ export class EventActionRepository {
         'NOW() BETWEEN pe.startAt AND pe.endAt',
       )
       .leftJoin('pe.promotion', 'p')
-      .addSelect('pe.startAt', 'promotionStartAt')
-      .addSelect('pe.endAt', 'promotionEndAt')
       .addSelect(
         `
     ST_DistanceSphere(ea.coords, ST_GeomFromText(:point, 4326))
@@ -38,7 +36,7 @@ export class EventActionRepository {
   `,
         'effective_distance',
       )
-      .groupBy('ea.id, ')
+      .groupBy('ea.id')
       .orderBy('effective_distance', 'ASC')
       .limit(dto.limit)
       .offset(dto.offset)

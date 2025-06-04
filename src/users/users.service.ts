@@ -17,11 +17,12 @@ export class UsersService {
   SALT_ROUNDS: number = 10;
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
-    const user = await this.usersRepository.save({
+    const user = this.usersRepository.create({
       ...createUserDto,
       password: await bcrypt.hash(createUserDto.password, this.SALT_ROUNDS),
     });
-    return plainToInstance(UserResponseDto, user, {
+    const userSaved = await this.usersRepository.save(user);
+    return plainToInstance(UserResponseDto, userSaved, {
       excludeExtraneousValues: true,
     });
   }

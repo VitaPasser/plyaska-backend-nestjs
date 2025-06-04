@@ -38,6 +38,7 @@ export class User {
   @OneToMany(() => EventAction, (eventAction) => eventAction.author, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
+    cascade: true,
   })
   eventActions!: EventAction[];
 }
