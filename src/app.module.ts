@@ -14,6 +14,7 @@ import { ImagesModule } from './images/images.module';
 import { PromotionEventsModule } from './promotion-events/promotion-events.module';
 import { PromotionsModule } from './promotions/promotions.module';
 import { CurrenciesModule } from './currencies/currencies.module';
+import { queryParser } from 'express-query-parser';
 
 @Module({
   imports: [
@@ -56,7 +57,13 @@ import { CurrenciesModule } from './currencies/currencies.module';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(express.static(join(process.cwd(), 'uploads')))
+      .apply(
+        queryParser({
+          parseBoolean: true,
+          parseNumber: true,
+        }),
+        express.static(join(process.cwd(), 'uploads')),
+      )
       .forRoutes('/uploads');
   }
 }

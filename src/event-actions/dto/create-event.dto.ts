@@ -18,7 +18,7 @@ export class CoordinateDto {
   longitude: number;
 }
 
-export class CreateEventDto {
+export class CreateEventActionDto {
   @IsNotEmpty()
   name: string;
 

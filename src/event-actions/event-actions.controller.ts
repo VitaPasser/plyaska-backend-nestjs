@@ -6,20 +6,22 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { EventActionsService } from './event-actions.service';
-import { CreateEventDto } from './dto/create-event.dto';
-import { UpdateEventDto } from './dto/update-event.dto';
+import { CreateEventActionDto } from './dto/create-event.dto';
+import { UpdateEventActionDto } from './dto/update-event.dto';
 import { Public } from 'src/auth/public.const';
 import { Roles } from 'src/users/roles/roles.decorator';
 import { Role } from 'src/users/roles/enums/role.enum';
+import { FindNearestWithPromotionAndPaginationPageEventActionDto } from './dto/find-nearest-with-promotion-and-pagination.dto';
 
-@Controller('event')
+@Controller('events')
 export class EventActionsController {
   constructor(private readonly eventService: EventActionsService) {}
 
   @Post()
-  create(@Body() createEventDto: CreateEventDto) {
+  create(@Body() createEventDto: CreateEventActionDto) {
     return this.eventService.create(createEventDto);
   }
 
@@ -30,6 +32,14 @@ export class EventActionsController {
   }
 
   @Public()
+  @Get('near')
+  findNear(
+    @Query() dto: FindNearestWithPromotionAndPaginationPageEventActionDto,
+  ) {
+    return this.eventService.findNearestWithPromotionAndPagination(dto);
+  }
+
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.eventService.findOne(id);
@@ -37,7 +47,10 @@ export class EventActionsController {
 
   @Patch(':id')
   @Roles(Role.ADMIN)
-  update(@Param('id') id: string, @Body() updateEventDto: UpdateEventDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateEventDto: UpdateEventActionDto,
+  ) {
     return this.eventService.update(id, updateEventDto);
   }
 

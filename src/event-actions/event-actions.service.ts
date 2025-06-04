@@ -1,18 +1,25 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateEventDto } from './dto/create-event.dto';
-import { UpdateEventDto } from './dto/update-event.dto';
-import { Point, Repository } from 'typeorm';
-import { EventAction } from './entity/eventAction.entity';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { CreateEventActionDto } from './dto/create-event.dto';
+import { UpdateEventActionDto } from './dto/update-event.dto';
+import { Repository, Point } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import {
+  FindNearestWithPromotionAndPaginationOffsetEventActionDto,
+  FindNearestWithPromotionAndPaginationPageEventActionDto,
+} from './dto/find-nearest-with-promotion-and-pagination.dto';
+import { EventAction } from './entity/eventAction.entity';
+import { EventActionRepository } from './repository/event-actions.repository';
 
 @Injectable()
 export class EventActionsService {
   constructor(
     @InjectRepository(EventAction)
     protected eventActionsRepository: Repository<EventAction>,
+    @Inject(EventActionRepository)
+    private readonly eventActionRepositoryService: EventActionRepository,
   ) {}
 
-  create(createEventDto: CreateEventDto) {
+  create(createEventDto: CreateEventActionDto) {
     const coords: Point = {
       type: 'Point',
       coordinates: [
@@ -28,13 +35,26 @@ export class EventActionsService {
     return await this.eventActionsRepository.find();
   }
 
+  async findNearestWithPromotionAndPagination(
+    dto: FindNearestWithPromotionAndPaginationPageEventActionDto,
+  ) {
+    const { page, pageSize, limit, ...coords } = dto;
+    const pageNumber = page - 1 > 0 ? page - 1 : 1;
+    const offset = pageNumber * pageSize;
+    const dtoWithOffset: FindNearestWithPromotionAndPaginationOffsetEventActionDto =
+      { limit, offset, ...coords };
+    return await this.eventActionRepositoryService.findNearestWithPromotionAndPagination(
+      dtoWithOffset,
+    );
+  }
+
   async findOne(id: string) {
     const event = await this.eventActionsRepository.findOneBy({ id });
     if (!event) throw new NotFoundException();
     return event;
   }
 
-  async update(id: string, updateEventDto: UpdateEventDto) {
+  async update(id: string, updateEventDto: UpdateEventActionDto) {
     let eventAction;
     if (updateEventDto.coords) {
       const coords: Point = {
@@ -48,7 +68,6 @@ export class EventActionsService {
     } else {
       eventAction = { ...updateEventDto };
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     await this.eventActionsRepository.update({ id }, eventAction);
     return this.findOne(id);
   }
