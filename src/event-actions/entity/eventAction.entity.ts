@@ -42,14 +42,22 @@ export class EventAction {
   @CreateDateColumn({ name: 'create_at' })
   createAt: Date;
 
-  @ManyToOne(() => User, (user) => user.eventActions)
+  @ManyToOne(() => User, (user) => user.eventActions, {
+    cascade: true,
+  })
+  @JoinColumn()
   author: User;
 
-  @ManyToMany(() => Image)
+  @ManyToMany(() => Image, {
+    cascade: true,
+  })
   @JoinTable()
   images: Image[];
 
-  @ManyToMany(() => Tag, (tag) => tag.eventActions)
+  @ManyToMany(() => Tag, (tag) => tag.eventActions, {
+    cascade: true,
+  })
+  @JoinTable()
   tags: Tag[];
 
   @ManyToOne(() => Category, (category) => category.eventActions)
@@ -59,6 +67,7 @@ export class EventAction {
   @OneToMany(() => PromotionEvent, (pe) => pe.eventAction, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
+    cascade: true,
   })
-  PromotionEvents!: PromotionEvent[];
+  promotionEvents!: PromotionEvent[];
 }

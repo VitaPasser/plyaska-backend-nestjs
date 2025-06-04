@@ -15,46 +15,34 @@ export class EventActionRepository {
     dto: FindNearestWithPromotionAndPaginationOffsetEventActionDto,
   ): Promise<EventAction[]> {
     const pointWKT = `SRID=4326;POINT(${dto.longitude} ${dto.latitude})`;
-    console.log('test');
-    const query = this.eventActionRepo
+    return this.eventActionRepo
       .createQueryBuilder('ea')
-      .leftJoinAndSelect('ea.category', 'category')
-      .leftJoinAndSelect('ea.author', 'author')
-      .leftJoinAndSelect('ea.images', 'images')
-      .leftJoinAndSelect('ea.tags', 'tags')
-      .leftJoinAndSelect('ea.promotionEvents', 'pe')
-      .leftJoinAndSelect('pe.promotion', 'ps')
+      .leftJoin(
+        'ea.promotionEvents',
+        'pe',
+        'NOW() BETWEEN pe.startAt AND pe.endAt',
+      )
+      .leftJoin('pe.promotion', 'p')
+      .addSelect('pe.startAt', 'promotionStartAt')
+      .addSelect('pe.endAt', 'promotionEndAt')
       .addSelect(
         `
-        ST_DistanceSphere(ea.coords, ST_GeomFromText(:point, 4326))
-      `,
+    ST_DistanceSphere(ea.coords, ST_GeomFromText(:point, 4326))
+  `,
         'raw_distance',
       )
       .addSelect(
         `
-        ST_DistanceSphere(ea.coords, ST_GeomFromText(:point, 4326)) /
-        (1 + LOG(1 + COALESCE(MAX(ps.power), 0)))
-      `,
+    ST_DistanceSphere(ea.coords, ST_GeomFromText(:point, 4326)) /
+    (1 + LOG(1 + COALESCE(MAX(p.power), 0)))
+  `,
         'effective_distance',
       )
-      .where((qb) => {
-        const sub = qb
-          .subQuery()
-          .select('1')
-          .from('promotion_events', 'pe')
-          .where('pe."event_action_id" = ea.id')
-          .andWhere('NOW() BETWEEN pe.start_at AND pe.end_at')
-          .getQuery();
-        return `(${sub}) IS NOT NULL OR TRUE`;
-      })
-      .groupBy(
-        'ea.id, category.id, author.id, images.id, tags.id, pe.promotionId, pe.eventActionId, pe.id, ps.id',
-      )
+      .groupBy('ea.id, ')
       .orderBy('effective_distance', 'ASC')
       .limit(dto.limit)
       .offset(dto.offset)
-      .setParameter('point', pointWKT);
-    console.log(query.getSql());
-    return query.getMany();
+      .setParameter('point', pointWKT)
+      .getMany();
   }
 }

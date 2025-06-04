@@ -49,7 +49,17 @@ export class EventActionsService {
   }
 
   async findOne(id: string) {
-    const event = await this.eventActionsRepository.findOneBy({ id });
+    const event = await this.eventActionsRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        category: true,
+        author: true,
+        images: true,
+        promotionEvents: true,
+      },
+    });
     if (!event) throw new NotFoundException();
     return event;
   }
@@ -68,6 +78,7 @@ export class EventActionsService {
     } else {
       eventAction = { ...updateEventDto };
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     await this.eventActionsRepository.update({ id }, eventAction);
     return this.findOne(id);
   }

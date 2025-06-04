@@ -22,7 +22,7 @@ export class PromotionEvent {
   @JoinColumn({ name: 'promotion_id' })
   promotion: Promotion;
 
-  @ManyToOne(() => EventAction, (eventAction) => eventAction.PromotionEvents)
+  @ManyToOne(() => EventAction, (eventAction) => eventAction.promotionEvents)
   @JoinColumn({ name: 'event_action_id' })
   eventAction: EventAction;
 

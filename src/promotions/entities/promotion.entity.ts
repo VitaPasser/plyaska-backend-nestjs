@@ -25,7 +25,7 @@ export class Promotion {
   @Column('decimal')
   price: number;
 
-  @ManyToOne(() => Currency, (currency) => currency.Promotion)
+  @ManyToOne(() => Currency, (currency) => currency.promotions)
   currency: Currency;
 
   @OneToMany(() => PromotionEvent, (pe) => pe.promotion, {

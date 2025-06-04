@@ -13,5 +13,5 @@ export class Currency {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  Promotion: Promotion[];
+  promotions: Promotion[];
 }
