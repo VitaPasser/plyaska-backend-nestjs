@@ -40,6 +40,18 @@ export class EventActionsController {
   }
 
   @Public()
+  @Get('near/:categoryName')
+  findNearByCategoryId(
+    @Query()
+    dto: FindNearestWithPromotionAndPaginationPageEventActionDto,
+    @Param() categoryName: string,
+  ) {
+    return this.eventService.findNearestWithPromotionAndPaginationByCategoryName(
+      { ...dto, categoryName },
+    );
+  }
+
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.eventService.findOne(id);

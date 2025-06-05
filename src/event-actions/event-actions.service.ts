@@ -9,6 +9,10 @@ import {
 } from './dto/find-nearest-with-promotion-and-pagination.dto';
 import { EventAction } from './entity/eventAction.entity';
 import { EventActionRepository } from './repository/event-actions.repository';
+import {
+  FindNearestWithPromotionAndPaginationOffsetEventActionByCategoryNameDto,
+  FindNearestWithPromotionAndPaginationPageEventActionByCategoryNameDto,
+} from './dto/find-nearest-with-promotion-and-pagination-by-category-name.dto';
 
 @Injectable()
 export class EventActionsService {
@@ -58,6 +62,19 @@ export class EventActionsService {
     const dtoWithOffset: FindNearestWithPromotionAndPaginationOffsetEventActionDto =
       { limit, offset, ...coords };
     return await this.eventActionRepositoryService.findNearestWithPromotionAndPagination(
+      dtoWithOffset,
+    );
+  }
+
+  async findNearestWithPromotionAndPaginationByCategoryName(
+    dto: FindNearestWithPromotionAndPaginationPageEventActionByCategoryNameDto,
+  ) {
+    const { page, pageSize, limit, ...dto2 } = dto;
+    const pageNumber = page - 1 <= 0 ? 0 : page - 1;
+    const offset = pageNumber * pageSize;
+    const dtoWithOffset: FindNearestWithPromotionAndPaginationOffsetEventActionByCategoryNameDto =
+      { limit, offset, ...dto2 };
+    return await this.eventActionRepositoryService.findNearestWithPromotionAndPaginationByCategoryName(
       dtoWithOffset,
     );
   }

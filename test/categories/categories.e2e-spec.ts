@@ -6,7 +6,7 @@ import { AppModule } from 'src/app.module';
 import { faker } from '@faker-js/faker';
 import {
   getAccessToken,
-  newCategoryData,
+  newCategoryTestCategoryData,
   newUserData,
   TYPE_BEARER,
 } from '../utils';
@@ -45,7 +45,7 @@ describe('CategoriesController (e2e)', () => {
   });
 
   it('POST /category - should create a category', async () => {
-    const dto = newCategoryData();
+    const dto = newCategoryTestCategoryData();
     const res = await request(app.getHttpServer())
       .post('/category')
       .send(dto)
@@ -57,7 +57,7 @@ describe('CategoriesController (e2e)', () => {
   });
 
   it('GET /category - should return array of categories', async () => {
-    const dto = newCategoryData();
+    const dto = newCategoryTestCategoryData();
     const resCreate = await request(app.getHttpServer())
       .post('/category')
       .send(dto)
@@ -70,8 +70,8 @@ describe('CategoriesController (e2e)', () => {
     expect(res.body.some((t: any) => t.id === resCreate.body.id)).toBe(true);
   });
 
-  it('GET /category/:id - should return a category by id', async () => {
-    const dto = newCategoryData();
+  it('GET /category/id/:id - should return a category by id', async () => {
+    const dto = newCategoryTestCategoryData();
     const resCreate = await request(app.getHttpServer())
       .post('/category')
       .send(dto)
@@ -80,15 +80,32 @@ describe('CategoriesController (e2e)', () => {
     const createdId = resCreate.body.id;
 
     const res = await request(app.getHttpServer())
-      .get(`/category/${createdId}`)
+      .get(`/category/id/${createdId}`)
       .expect(200);
 
     expect(res.body).toHaveProperty('id', createdId);
     expect(res.body).toHaveProperty('name');
   });
 
+  it('GET /category/:name - should return a category by name', async () => {
+    const dto = newCategoryTestCategoryData();
+    const resCreate = await request(app.getHttpServer())
+      .post('/category')
+      .send(dto)
+      .auth(access_token, TYPE_BEARER)
+      .expect(201);
+    const createdName = resCreate.body.name;
+
+    const res = await request(app.getHttpServer())
+      .get(`/category/${createdName}`)
+      .expect(200);
+
+    expect(res.body).toHaveProperty('name', createdName);
+    expect(res.body).toHaveProperty('id');
+  });
+
   it('PATCH /category/:id - should update a category', async () => {
-    const dto = newCategoryData();
+    const dto = newCategoryTestCategoryData();
     const resCreate = await request(app.getHttpServer())
       .post('/category')
       .send(dto)
@@ -96,7 +113,10 @@ describe('CategoriesController (e2e)', () => {
       .expect(201);
     const createdId = resCreate.body.id;
 
-    const updateDto = { name: faker.commerce.department() };
+    const updateDto = {
+      name: faker.commerce.department() + '_' + faker.string.uuid(),
+    };
+
     const res = await request(app.getHttpServer())
       .patch(`/category/${createdId}`)
       .send(updateDto)
@@ -108,7 +128,7 @@ describe('CategoriesController (e2e)', () => {
   });
 
   it('DELETE /category/:id - should delete a category', async () => {
-    const dto = newCategoryData();
+    const dto = newCategoryTestCategoryData();
     const resCreate = await request(app.getHttpServer())
       .post('/category')
       .send(dto)

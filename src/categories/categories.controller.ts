@@ -31,9 +31,15 @@ export class CategoriesController {
   }
 
   @Public()
-  @Get(':id')
+  @Get('id/:id')
   findOne(@Param('id') id: string) {
     return this.categoryService.findOne(+id);
+  }
+
+  @Public()
+  @Get(':name')
+  findOneByName(@Param('name') name: string) {
+    return this.categoryService.findOneByName(name);
   }
 
   @Patch(':id')

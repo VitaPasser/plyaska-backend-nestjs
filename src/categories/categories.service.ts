@@ -26,6 +26,12 @@ export class CategoriesService {
     return category;
   }
 
+  async findOneByName(name: string) {
+    const category = await this.categoryRepository.findOneBy({ name });
+    if (!category) throw new NotFoundException();
+    return category;
+  }
+
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
     await this.categoryRepository.update({ id }, updateCategoryDto);
     return this.findOne(id);

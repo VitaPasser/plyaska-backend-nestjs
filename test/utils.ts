@@ -62,8 +62,8 @@ export const newPromotionData = async (
   };
 };
 
-export const newCategoryData = () => ({
-  name: faker.commerce.department(),
+export const newCategoryTestCategoryData = () => ({
+  name: faker.commerce.department() + '_' + faker.string.uuid(),
 });
 
 export const newCurrencyData = () => ({
@@ -116,22 +116,30 @@ export const newEventActionData = async (
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   const tagsIds: string[] = resTags.map((res) => res.body.id);
 
-  const categoryDto = newCategoryData();
-  const categoryId = (
+  const categoryName = ['клуб', 'заклад', 'подія'];
+  const categoryDto = { name: faker.helpers.arrayElement(categoryName) };
+  let categoryId = (
     await request(app.getHttpServer())
-      .post('/category')
-      .send(categoryDto)
+      .get(`/category/${categoryDto.name}`)
       .auth(access_token, TYPE_BEARER)
   ).body.id;
+  if (!categoryId) {
+    categoryId = (
+      await request(app.getHttpServer())
+        .post('/category')
+        .send(categoryDto)
+        .auth(access_token, TYPE_BEARER)
+    ).body.id;
+  }
 
   const result = {
     name: faker.lorem.words(2),
     address: faker.location.streetAddress(),
     phoneNumber: faker.phone.number(),
-    description: faker.lorem.sentence(),
+    description: faker.lorem.paragraph(),
     coords: {
-      latitude: faker.location.latitude({ max: 60, min: 59.998 }),
-      longitude: faker.location.longitude({ max: 60, min: 59.998 }),
+      latitude: faker.location.latitude({ max: 49, min: 46 }),
+      longitude: faker.location.longitude({ max: 31, min: 30.998 }),
     },
     authorId: resUser.body.id,
     imagesIds: imagesIds,

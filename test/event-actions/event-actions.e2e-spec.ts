@@ -105,6 +105,44 @@ describe('EventActionsController (e2e)', () => {
     );
   });
 
+  it('GET /events/near/categoryName?...query - should return array of near events by category name', async () => {
+    const dto = await newEventActionData(app, access_token);
+    await request(app.getHttpServer())
+      .post('/events')
+      .send(dto)
+      .auth(access_token, TYPE_BEARER)
+      .expect(201);
+
+    const categoryName = (
+      await request(app.getHttpServer())
+        .get(`/category/id/${dto.categoryId}`)
+        .expect(200)
+    ).body.name;
+
+    const dtoGet = {
+      latitude: 59.999,
+      longitude: 59.999,
+      limit: 20,
+      page: 1,
+      pageSize: 20,
+    };
+    const query = Object.entries(dtoGet)
+      .map(
+        ([key, value]) =>
+          `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+      )
+      .join('&');
+    const res = await request(app.getHttpServer())
+      .get(`/events/near/${categoryName}?${query}`)
+      .expect(200);
+
+    const body = res.body;
+    expect(Array.isArray(body)).toBe(true);
+    console.log(
+      body.map((eventAction: EventAction) => eventAction.coords.coordinates),
+    );
+  });
+
   it('GET /events/:id - should return an events by id', async () => {
     const dto = await newEventActionData(app, access_token);
     const resCreate = await request(app.getHttpServer())
