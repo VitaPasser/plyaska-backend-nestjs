@@ -17,12 +17,21 @@ export class PromotionsService {
   }
 
   findAll() {
-    return this.promotionsRepository.find();
+    return this.promotionsRepository.find({
+      relations: {
+        currency: true,
+      },
+    });
   }
 
   async findOne(id: string) {
-    const promotion = await this.promotionsRepository.findOneBy({
-      id,
+    const promotion = await this.promotionsRepository.findOne({
+      where: {
+        id,
+      },
+      relations: {
+        currency: true,
+      },
     });
     if (!promotion) throw new NotFoundException();
     return promotion;

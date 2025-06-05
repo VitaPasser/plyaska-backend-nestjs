@@ -19,7 +19,6 @@ export class CategoriesController {
   constructor(private readonly categoryService: CategoriesService) {}
 
   @Post()
-  @Roles(Role.ADMIN)
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoryService.create(createCategoryDto);
   }
@@ -40,6 +39,12 @@ export class CategoriesController {
   @Get(':name')
   findOneByName(@Param('name') name: string) {
     return this.categoryService.findOneByName(name);
+  }
+
+  @Public()
+  @Post('findOrCreateByName/:name')
+  findOrCreateByName(@Param('name') name: string) {
+    return this.categoryService.findOrCreateByName(name);
   }
 
   @Patch(':id')

@@ -1,4 +1,11 @@
-import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UnauthorizedException,
+  Request,
+  Get,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { Public } from './public.const';
@@ -15,5 +22,11 @@ export class AuthController {
       throw new UnauthorizedException();
     }
     return this.authService.login(user);
+  }
+
+  @Get('auth')
+  auth(@Request() req) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return req.user;
   }
 }

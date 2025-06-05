@@ -56,7 +56,7 @@ export const newPromotionData = async (
   return {
     name: faker.commerce.productName(),
     description: faker.lorem.sentence(),
-    power: randomInt(1000000) / 10000,
+    power: randomInt(1000000) / 10000 + 1,
     price: randomInt(1000000) / 100,
     currency: currency_res.body.id,
   };
@@ -90,9 +90,9 @@ export const newEventActionData = async (
     .send(userDto)
     .auth(access_token, TYPE_BEARER);
 
-  const testImagePath = await imageDownload();
   const resImages: Response[] = [];
   for (let index = 0; index < 3; index++) {
+    const testImagePath = await imageDownload();
     resImages.push(
       await request(app.getHttpServer())
         .post('/images/upload')
@@ -103,9 +103,9 @@ export const newEventActionData = async (
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   const imagesIds: string[] = resImages.map((res) => res.body.id);
 
-  const tagDto = newTagData();
   const resTags: Response[] = [];
   for (let index = 0; index < 3; index++) {
+    const tagDto = newTagData();
     resTags.push(
       await request(app.getHttpServer())
         .post('/tags')

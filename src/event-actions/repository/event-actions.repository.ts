@@ -88,8 +88,6 @@ export class EventActionRepository {
       .createQueryBuilder('ea')
       .leftJoinAndSelect('ea.author', 'author')
       .leftJoinAndSelect('ea.category', 'category')
-      .where(`category.name = :categoryName`)
-      .setParameter('categoryName', dto.categoryName)
       .leftJoinAndSelect('ea.images', 'images')
       .leftJoinAndSelect('ea.tags', 'tags')
       .leftJoinAndSelect(
@@ -129,6 +127,12 @@ export class EventActionRepository {
           // `,
           //   'effective_distance_sub',
           // )
+          .innerJoin(
+            'ea_sub.category',
+            'category_sub',
+            'category_sub.name = :categoryName',
+          )
+          .setParameter('categoryName', dto.categoryName)
           .groupBy('ea_sub.id')
           .orderBy(
             `

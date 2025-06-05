@@ -82,6 +82,24 @@ describe('TagsController (e2e)', () => {
     expect(res.body).toHaveProperty('name');
   });
 
+  it('POST /tags/findOrCreateByName/:name - should return a tag by name or create and return', async () => {
+    const tagDto = newTagData();
+
+    const resCreate = await request(app.getHttpServer())
+      .post(`/tags/findOrCreateByName/${tagDto.name}`)
+      .auth(access_token, TYPE_BEARER)
+      .expect(201);
+    const createdTagId = resCreate.body.id;
+
+    const res = await request(app.getHttpServer())
+      .post(`/tags/findOrCreateByName/${tagDto.name}`)
+      .auth(access_token, TYPE_BEARER)
+      .expect(201);
+
+    expect(res.body).toHaveProperty('name', tagDto.name);
+    expect(res.body).toHaveProperty('id', createdTagId);
+  });
+
   it('PATCH /tags/:id - should update a tag', async () => {
     const tagDto = newTagData();
     const resCreate = await request(app.getHttpServer())

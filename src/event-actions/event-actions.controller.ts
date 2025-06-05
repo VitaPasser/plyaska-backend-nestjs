@@ -6,10 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Request,
   Query,
 } from '@nestjs/common';
 import { EventActionsService } from './event-actions.service';
-import { CreateEventActionDto } from './dto/create-event.dto';
+import {
+  CreateEventActionDto,
+  FormCreateEventActionDto,
+} from './dto/create-event.dto';
 import { UpdateEventActionDto } from './dto/update-event.dto';
 import { Public } from 'src/auth/public.const';
 import { Roles } from 'src/users/roles/roles.decorator';
@@ -23,6 +27,15 @@ export class EventActionsController {
   @Post()
   create(@Body() createEventDto: CreateEventActionDto) {
     return this.eventService.create(createEventDto);
+  }
+
+  @Post('form')
+  createByForm(
+    @Body() createEventDto: FormCreateEventActionDto,
+    @Request() req,
+  ) {
+    const userId = req.user.sub;
+    return this.eventService.create({ ...createEventDto, authorId: userId });
   }
 
   @Public()
@@ -44,7 +57,7 @@ export class EventActionsController {
   findNearByCategoryId(
     @Query()
     dto: FindNearestWithPromotionAndPaginationPageEventActionDto,
-    @Param() categoryName: string,
+    @Param('categoryName') categoryName: string,
   ) {
     return this.eventService.findNearestWithPromotionAndPaginationByCategoryName(
       { ...dto, categoryName },

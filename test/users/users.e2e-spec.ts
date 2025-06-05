@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
@@ -25,7 +26,7 @@ describe('UsersController (e2e)', () => {
 
   it('POST /users - should create a user', async () => {
     const userDto = newUserData();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
     const res = await request(app.getHttpServer())
       .post('/users')
       .send(userDto)
@@ -37,12 +38,12 @@ describe('UsersController (e2e)', () => {
 
   it('GET /users - should return array of users', async () => {
     const userDto = newUserData();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
     const resCreate = await request(app.getHttpServer())
       .post('/users')
       .send(userDto)
       .expect(201);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
     const res = await request(app.getHttpServer()).get('/users').expect(200);
 
     expect(Array.isArray(res.body)).toBe(true);
@@ -51,13 +52,13 @@ describe('UsersController (e2e)', () => {
 
   it('GET /users/:id - should return a user by id', async () => {
     const userDto = newUserData();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
     const resCreate = await request(app.getHttpServer())
       .post('/users')
       .send(userDto)
       .expect(201);
     const createdUserId = resCreate.body.id;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
     const res = await request(app.getHttpServer())
       .get(`/users/${createdUserId}`)
       .expect(200);
@@ -68,7 +69,7 @@ describe('UsersController (e2e)', () => {
 
   it('PATCH /users/:id - should update a user', async () => {
     const userDto = newUserData();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
     const resCreate = await request(app.getHttpServer())
       .post('/users')
       .send(userDto)
@@ -78,7 +79,7 @@ describe('UsersController (e2e)', () => {
     const access_token: string = await getAccessToken(userDto, app);
 
     const updateDto = { name: faker.internet.username(), role: 'admin' };
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
     const res = await request(app.getHttpServer())
       .patch(`/users/${createdUserId}`)
       .send(updateDto)
@@ -92,7 +93,6 @@ describe('UsersController (e2e)', () => {
 
   it('DELETE /users/:id - should delete a user', async () => {
     const userDto = newUserData();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const resCreate = await request(app.getHttpServer())
       .post('/users')
       .send(userDto)
@@ -108,5 +108,23 @@ describe('UsersController (e2e)', () => {
     await request(app.getHttpServer())
       .get(`/users/${createdUserId}`)
       .expect(404);
+  });
+
+  it('GET /auth/auth - get user id from jwt token', async () => {
+    const userDto = newUserData();
+
+    const resCreate = await request(app.getHttpServer())
+      .post('/users')
+      .send(userDto)
+      .expect(201);
+
+    const access_token: string = await getAccessToken(userDto, app);
+    const res = await request(app.getHttpServer())
+      .get(`/auth/auth`)
+      .auth(access_token, TYPE_BEARER)
+      .expect(200);
+
+    expect(res.body).toHaveProperty('sub', resCreate.body.id);
+    expect(res.body).toHaveProperty('username', resCreate.body.name);
   });
 });

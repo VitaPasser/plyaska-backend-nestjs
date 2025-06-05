@@ -19,7 +19,7 @@ export class TagsController {
   constructor(private readonly tagService: TagsService) {}
 
   @Post()
-  @Roles(Role.ADMIN)
+  // @Roles(Role.ADMIN)
   create(@Body() createTagDto: CreateTagDto) {
     return this.tagService.create(createTagDto);
   }
@@ -34,6 +34,11 @@ export class TagsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.tagService.findOne(id);
+  }
+
+  @Post('findOrCreateByName/:name')
+  findOrCreateByName(@Param('name') name: string) {
+    return this.tagService.findOrCreateByName(name);
   }
 
   @Patch(':id')

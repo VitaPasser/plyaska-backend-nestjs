@@ -32,6 +32,14 @@ export class CategoriesService {
     return category;
   }
 
+  async findOrCreateByName(name: string) {
+    const category = await this.categoryRepository.findOneBy({
+      name,
+    });
+    if (!category) return this.create({ name });
+    return category;
+  }
+
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
     await this.categoryRepository.update({ id }, updateCategoryDto);
     return this.findOne(id);

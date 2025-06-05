@@ -104,6 +104,24 @@ describe('CategoriesController (e2e)', () => {
     expect(res.body).toHaveProperty('id');
   });
 
+  it('POST /category/findOrCreateByName/:name - should return a category by name or create and return', async () => {
+    const categoryDto = newCategoryTestCategoryData();
+
+    const resCreate = await request(app.getHttpServer())
+      .post(`/category/findOrCreateByName/${categoryDto.name}`)
+      .auth(access_token, TYPE_BEARER)
+      .expect(201);
+    const createdCategoryId = resCreate.body.id;
+
+    const res = await request(app.getHttpServer())
+      .post(`/category/findOrCreateByName/${categoryDto.name}`)
+      .auth(access_token, TYPE_BEARER)
+      .expect(201);
+
+    expect(res.body).toHaveProperty('name', categoryDto.name);
+    expect(res.body).toHaveProperty('id', createdCategoryId);
+  });
+
   it('PATCH /category/:id - should update a category', async () => {
     const dto = newCategoryTestCategoryData();
     const resCreate = await request(app.getHttpServer())

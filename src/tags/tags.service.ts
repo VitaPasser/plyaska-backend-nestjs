@@ -28,6 +28,14 @@ export class TagsService {
     return tag;
   }
 
+  async findOrCreateByName(name: string) {
+    const tag = await this.tagsRepository.findOneBy({
+      name,
+    });
+    if (!tag) return this.create({ name });
+    return tag;
+  }
+
   async update(id: string, updateTagDto: UpdateTagDto) {
     await this.tagsRepository.update({ id }, updateTagDto);
     return this.findOne(id);

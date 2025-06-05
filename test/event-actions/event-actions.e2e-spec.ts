@@ -59,6 +59,34 @@ describe('EventActionsController (e2e)', () => {
     expect(res.body.name).toBe(dto.name);
   });
 
+  it('POST /events/form - should create an event for form', async () => {
+    const dto = {
+      address: 'іфвфі',
+      description: 'asdasd',
+      name: 'Аркадія',
+      phoneNumber: '+38 098 556 69 04',
+      coords: {
+        longitude: 30.44062578566846,
+        latitude: 46.387101126053096,
+      },
+      tagIds: ['64ad40df-1476-48e5-8bf3-f104518be8e7'],
+      categoryId: 18,
+      imagesIds: [
+        'a7cbef38-48ed-40bc-a44f-8b46da368431',
+        'c1aa5b2a-1907-4844-94e6-8a36b17d55f8',
+        'f143e643-58b2-4415-b03d-ccda4350e51a',
+      ],
+    };
+    const res = await request(app.getHttpServer())
+      .post('/events/form')
+      .send(dto)
+      .auth(access_token, TYPE_BEARER)
+      .expect(201);
+
+    expect(res.body).toHaveProperty('id');
+    expect(res.body.name).toBe(dto.name);
+  });
+
   it('GET /events - should return array of events', async () => {
     const dto = await newEventActionData(app, access_token);
     const resCreate = await request(app.getHttpServer())
@@ -138,6 +166,14 @@ describe('EventActionsController (e2e)', () => {
 
     const body = res.body;
     expect(Array.isArray(body)).toBe(true);
+    if (Array.isArray(body)) {
+      expect(
+        body.every(
+          (eventAction: EventAction) =>
+            eventAction.category.name == categoryName,
+        ),
+      ).toBe(true);
+    }
     console.log(
       body.map((eventAction: EventAction) => eventAction.coords.coordinates),
     );

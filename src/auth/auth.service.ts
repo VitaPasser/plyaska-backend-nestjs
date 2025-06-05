@@ -5,12 +5,14 @@ import { LoginDto } from './dto/login.dto';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     @InjectRepository(User) private userRepository: Repository<User>,
+    private configService: ConfigService,
   ) {}
 
   async validateUser(login: LoginDto): Promise<User | null> {

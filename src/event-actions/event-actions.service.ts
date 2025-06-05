@@ -88,6 +88,7 @@ export class EventActionsService {
         category: true,
         author: true,
         images: true,
+        tags: true,
         promotionEvents: true,
       },
     });
